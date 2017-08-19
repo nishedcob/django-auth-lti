@@ -46,6 +46,7 @@ class LTIAuthMiddleware(MiddlewareMixin):
             logger.debug('received a basic-lti-launch-request - authenticating the user')
 
             # authenticate and log the user in
+            callback = lambda: print("Time up!")
             t = Timer(10000000, callback) # 10 seconds
             t.start()
             #with Timer() as t:
