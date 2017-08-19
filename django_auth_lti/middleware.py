@@ -46,9 +46,14 @@ class LTIAuthMiddleware(MiddlewareMixin):
             logger.debug('received a basic-lti-launch-request - authenticating the user')
 
             # authenticate and log the user in
-            with Timer() as t:
-                user = auth.authenticate(request=request)
-            logger.debug('authenticate() took %s s' % t.secs)
+            t = Timer(10000000, callback) # 10 seconds
+            t.start()
+            #with Timer() as t:
+            #    user = auth.authenticate(request=request)
+            user = auth.authenticate(request=request)
+            t.stop()
+            #logger.debug('authenticate() took %s s' % t.secs)
+            logger.debug('authenticate() took %s s' % t.elapsed)
 
             if user is not None:
                 # User is valid.  Set request.user and persist user in the session
@@ -56,10 +61,15 @@ class LTIAuthMiddleware(MiddlewareMixin):
 
                 logger.debug('user was successfully authenticated; now log them in')
                 request.user = user
-                with Timer() as t:
-                    auth.login(request, user)
+                t = Timer(10000000, callback) # 10 seconds max
+                t.start()
+                #with Timer() as t:
+                #    auth.login(request, user)
+                auth.login(request, user)
 
-                logger.debug('login() took %s s' % t.secs)
+                #logger.debug('login() took %s s' % t.secs)
+                t.stop()
+                logger.debug('login() took %s s' % t.elapsed)
 
                 lti_launch = {
                     'context_id': request.POST.get('context_id', None),
